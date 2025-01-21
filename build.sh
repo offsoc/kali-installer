@@ -17,102 +17,102 @@ DEBUG=""
 HOST_ARCH=$(dpkg --print-architecture)
 
 image_name() {
-	if [ "$KALI_VARIANT" = "netinst" ]; then
-		echo "simple-cdd/images/kali-$KALI_VERSION-$KALI_ARCH-NETINST-1.iso"
-	else
-		echo "simple-cdd/images/kali-$KALI_VERSION-$KALI_ARCH-BD-1.iso"
-	fi
+  if [ "$KALI_VARIANT" = "netinst" ]; then
+    echo "simple-cdd/images/kali-$KALI_VERSION-$KALI_ARCH-NETINST-1.iso"
+  else
+    echo "simple-cdd/images/kali-$KALI_VERSION-$KALI_ARCH-BD-1.iso"
+  fi
 }
 
 target_image_name() {
-	local arch=$1
+  local arch=$1
 
-	IMAGE_NAME="$(image_name $arch)"
-	IMAGE_EXT="${IMAGE_NAME##*.}"
-	if [ "$IMAGE_EXT" = "$IMAGE_NAME" ]; then
-		IMAGE_EXT="img"
-	fi
-	if [ "$KALI_VARIANT" = "default" ]; then
-		echo "${TARGET_SUBDIR:+$TARGET_SUBDIR/}kali-linux-$KALI_VERSION-installer-$KALI_ARCH.$IMAGE_EXT"
-	else
-		echo "${TARGET_SUBDIR:+$TARGET_SUBDIR/}kali-linux-$KALI_VERSION-installer-$KALI_VARIANT-$KALI_ARCH.$IMAGE_EXT"
-	fi
+  IMAGE_NAME="$(image_name $arch)"
+  IMAGE_EXT="${IMAGE_NAME##*.}"
+  if [ "$IMAGE_EXT" = "$IMAGE_NAME" ]; then
+    IMAGE_EXT="img"
+  fi
+  if [ "$KALI_VARIANT" = "default" ]; then
+    echo "${TARGET_SUBDIR:+$TARGET_SUBDIR/}kali-linux-$KALI_VERSION-installer-$KALI_ARCH.$IMAGE_EXT"
+  else
+    echo "${TARGET_SUBDIR:+$TARGET_SUBDIR/}kali-linux-$KALI_VERSION-installer-$KALI_VARIANT-$KALI_ARCH.$IMAGE_EXT"
+  fi
 }
 
 target_build_log() {
-	TARGET_IMAGE_NAME=$(target_image_name $1)
-	echo ${TARGET_IMAGE_NAME%.*}.log
+  TARGET_IMAGE_NAME=$(target_image_name $1)
+  echo ${TARGET_IMAGE_NAME%.*}.log
 }
 
 default_version() {
-	case "$1" in
-		kali-*)
-			echo "${1#kali-}"
-		;;
-		*)
-			echo "$1"
-		;;
-	esac
+  case "$1" in
+    kali-*)
+      echo "${1#kali-}"
+    ;;
+    *)
+      echo "$1"
+    ;;
+  esac
 }
 
 failure() {
-	echo "Build of $KALI_DIST/$KALI_VARIANT/$KALI_ARCH installer image failed (see build.log for details)" >&2
-	echo "Log: $BUILD_LOG" >&2
-	exit 2
+  echo "Build of $KALI_DIST/$KALI_VARIANT/$KALI_ARCH installer image failed (see build.log for details)" >&2
+  echo "Log: $BUILD_LOG" >&2
+  exit 2
 }
 
 run_and_log() {
-	if [ -n "$VERBOSE" ] || [ -n "$DEBUG" ]; then
-		printf "RUNNING:" >&2
-		for _ in "$@"; do
-			[[ $_ =~ [[:space:]] ]] && printf " '%s'" "$_" || printf " %s" "$_"
-		done >&2
-		printf "\n" >&2
-		"$@" 2>&1 | tee -a "$BUILD_LOG"
-	else
-		"$@" >>"$BUILD_LOG" 2>&1
-	fi
-	return $?
+  if [ -n "$VERBOSE" ] || [ -n "$DEBUG" ]; then
+    printf "RUNNING:" >&2
+    for _ in "$@"; do
+      [[ $_ =~ [[:space:]] ]] && printf " '%s'" "$_" || printf " %s" "$_"
+    done >&2
+    printf "\n" >&2
+    "$@" 2>&1 | tee -a "$BUILD_LOG"
+  else
+    "$@" >>"$BUILD_LOG" 2>&1
+  fi
+  return $?
 }
 
 debug() {
-	if [ -n "$DEBUG" ]; then
-		echo "DEBUG: $*" >&2
-	fi
+  if [ -n "$DEBUG" ]; then
+    echo "DEBUG: $*" >&2
+  fi
 }
 
 clean() {
-	debug "Cleaning"
+  debug "Cleaning"
 
-	run_and_log $SUDO rm -rf "$(pwd)/simple-cdd/tmp"
-	run_and_log $SUDO rm -rf "$(pwd)/simple-cdd/debian-cd"
+  run_and_log $SUDO rm -rf "$(pwd)/simple-cdd/tmp"
+  run_and_log $SUDO rm -rf "$(pwd)/simple-cdd/debian-cd"
 }
 
 print_help() {
-	echo "Usage: $0 [<option>...]"
-	echo
-	for x in $(echo "${BUILD_OPTS_LONG}" | sed 's_,_ _g'); do
-		x=$(echo $x | sed 's/:$/ <arg>/')
-		echo "  --${x}"
-	done
-	exit 0
+  echo "Usage: $0 [<option>...]"
+  echo
+  for x in $(echo "${BUILD_OPTS_LONG}" | sed 's_,_ _g'); do
+    x=$(echo $x | sed 's/:$/ <arg>/')
+    echo "  --${x}"
+  done
+  exit 0
 }
 
 require_package() {
-	local pkg=$1
-	local required_version=$2
-	local pkg_version=
+  local pkg=$1
+  local required_version=$2
+  local pkg_version=
 
-	pkg_version=$(dpkg-query -f '${Version}' -W $pkg || true)
-	if [ -z "$pkg_version" ]; then
-		echo "ERROR: You need $pkg, but it is not installed" >&2
-		exit 1
-	fi
-	if dpkg --compare-versions "$pkg_version" lt "$required_version"; then
-		echo "ERROR: You need $pkg (>= $required_version), you have $pkg_version" >&2
-		exit 1
-	fi
-	debug "$pkg version: $pkg_version"
+  pkg_version=$(dpkg-query -f '${Version}' -W $pkg || true)
+  if [ -z "$pkg_version" ]; then
+    echo "ERROR: You need $pkg, but it is not installed" >&2
+    exit 1
+  fi
+  if dpkg --compare-versions "$pkg_version" lt "$required_version"; then
+    echo "ERROR: You need $pkg (>= $required_version), you have $pkg_version" >&2
+    exit 1
+  fi
+  debug "$pkg version: $pkg_version"
 }
 
 # Allowed command line options
@@ -127,34 +127,34 @@ debug "BUILD_LOG: $BUILD_LOG"
 temp=$(getopt -o "$BUILD_OPTS_SHORT" -l "$BUILD_OPTS_LONG,get-image-path" -- "$@")
 eval set -- "$temp"
 while true; do
-	case "$1" in
-		-d|--distribution) KALI_DIST="$2"; shift 2; ;;
-		-a|--arch) KALI_ARCH="$2"; shift 2; ;;
-		-v|--verbose) VERBOSE="1"; shift 1; ;;
-		-D|--debug) DEBUG="1"; shift 1; ;;
-		-h|--help) print_help; ;;
-		--variant) KALI_VARIANT="$2"; shift 2; ;;
-		--version) KALI_VERSION="$2"; shift 2; ;;
-		--subdir) TARGET_SUBDIR="$2"; shift 2; ;;
-		--get-image-path) ACTION="get-image-path"; shift 1; ;;
-		--clean) ACTION="clean"; shift 1; ;;
-		--no-clean) NO_CLEAN="1"; shift 1 ;;
-		--) shift; break; ;;
-		*) echo "ERROR: Invalid command-line option: $1" >&2; exit 1; ;;
-	esac
+  case "$1" in
+    -d|--distribution) KALI_DIST="$2"; shift 2; ;;
+    -a|--arch) KALI_ARCH="$2"; shift 2; ;;
+    -v|--verbose) VERBOSE="1"; shift 1; ;;
+    -D|--debug) DEBUG="1"; shift 1; ;;
+    -h|--help) print_help; ;;
+    --variant) KALI_VARIANT="$2"; shift 2; ;;
+    --version) KALI_VERSION="$2"; shift 2; ;;
+    --subdir) TARGET_SUBDIR="$2"; shift 2; ;;
+    --get-image-path) ACTION="get-image-path"; shift 1; ;;
+    --clean) ACTION="clean"; shift 1; ;;
+    --no-clean) NO_CLEAN="1"; shift 1 ;;
+    --) shift; break; ;;
+    *) echo "ERROR: Invalid command-line option: $1" >&2; exit 1; ;;
+  esac
 done
 
 # Set default values
 KALI_ARCH=${KALI_ARCH:-$HOST_ARCH}
 if [ "$KALI_ARCH" = "x64" ]; then
-	KALI_ARCH="amd64"
+  KALI_ARCH="amd64"
 elif [ "$KALI_ARCH" = "x86" ]; then
-	KALI_ARCH="i386"
+  KALI_ARCH="i386"
 fi
 debug "KALI_ARCH: $KALI_ARCH"
 
 if [ -z "$KALI_VERSION" ]; then
-	KALI_VERSION="$(default_version $KALI_DIST)"
+  KALI_VERSION="$(default_version $KALI_DIST)"
 fi
 debug "KALI_VERSION: $KALI_VERSION"
 
@@ -170,27 +170,27 @@ export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 debug "PATH: $PATH"
 
 if grep -q -e "^ID=debian" -e "^ID_LIKE=debian" /usr/lib/os-release; then
-	debug "OS: $( . /usr/lib/os-release && echo $NAME $VERSION )"
+  debug "OS: $( . /usr/lib/os-release && echo $NAME $VERSION )"
 elif [ -e /etc/debian_version ]; then
-	debug "OS: $( cat /etc/debian_version )"
+  debug "OS: $( cat /etc/debian_version )"
 else
-	echo "ERROR: Non Debian-based OS" >&2
+  echo "ERROR: Non Debian-based OS" >&2
 fi
 
 if [ ! -d "$(dirname $0)/kali-config/installer-$KALI_VARIANT" ]; then
-	echo "ERROR: Unknown variant of Kali installer configuration: $KALI_VARIANT" >&2
+  echo "ERROR: Unknown variant of Kali installer configuration: $KALI_VARIANT" >&2
 fi
 require_package debian-cd "3.2.1+kali1"
 require_package simple-cdd "0.6.9"
 
 # We need root rights at some point
 if [ "$(whoami)" != "root" ]; then
-	if ! which $SUDO >/dev/null; then
-		echo "ERROR: $0 is not run as root and $SUDO is not available" >&2
-		exit 1
-	fi
+  if ! which $SUDO >/dev/null; then
+    echo "ERROR: $0 is not run as root and $SUDO is not available" >&2
+    exit 1
+  fi
 else
-	SUDO="" # We're already root
+  SUDO="" # We're already root
 fi
 debug "SUDO: $SUDO"
 
@@ -199,15 +199,15 @@ debug "IMAGE_NAME: $IMAGE_NAME"
 
 debug "ACTION: $ACTION"
 if [ "$ACTION" = "get-image-path" ]; then
-	echo $(target_image_name $KALI_ARCH)
-	exit 0
+  echo $(target_image_name $KALI_ARCH)
+  exit 0
 fi
 
 if [ "$NO_CLEAN" = "" ]; then
-	clean
+  clean
 fi
 if [ "$ACTION" = "clean" ]; then
-	exit 0
+  exit 0
 fi
 
 cd $(dirname $0)
@@ -227,18 +227,18 @@ debug "ARCH: $ARCH"
 debug "DEBVERSION: $DEBVERSION"
 
 if [ "$KALI_VARIANT" = "netinst" ]; then
-	export DISKTYPE="NETINST"
-	profiles="kali"
-	auto_profiles="kali"
+  export DISKTYPE="NETINST"
+  profiles="kali"
+  auto_profiles="kali"
 elif [ "$KALI_VARIANT" = "purple" ]; then
-	export DISKTYPE="BD"
-	profiles="kali kali-purple offline"
-	auto_profiles="kali kali-purple offline"
-	export KERNEL_PARAMS="debian-installer/theme=Clearlooks-Purple"
+  export DISKTYPE="BD"
+  profiles="kali kali-purple offline"
+  auto_profiles="kali kali-purple offline"
+  export KERNEL_PARAMS="debian-installer/theme=Clearlooks-Purple"
 else    # plain installer
-	export DISKTYPE="BD"
-	profiles="kali offline"
-	auto_profiles="kali offline"
+  export DISKTYPE="BD"
+  profiles="kali offline"
+  auto_profiles="kali offline"
 fi
 debug "DISKTYPE: $DISKTYPE"
 debug "profiles: $profiles"
@@ -246,12 +246,12 @@ debug "auto_profiles: $auto_profiles"
 [ -v KERNEL_PARAMS ] && debug "KERNEL_PARAMS: $KERNEL_PARAMS"
 
 if [ -e .mirror ]; then
-	kali_mirror=$(cat .mirror)
+  kali_mirror=$(cat .mirror)
 else
-	kali_mirror=http://kali.download/kali/
+  kali_mirror=http://kali.download/kali/
 fi
 if ! echo "$kali_mirror" | grep -q '/$'; then
-	kali_mirror="$kali_mirror/"
+  kali_mirror="$kali_mirror/"
 fi
 debug "kali_mirror: $kali_mirror"
 
@@ -267,12 +267,12 @@ cp -f kali-config/common/bootloaders/grub-pc/grub-theme.in simple-cdd/debian-cd/
 # Keep 686-pae udebs as we changed the default from 686
 # to 686-pae in the debian-installer images
 sed -i -e '/686-pae/d' \
-	simple-cdd/debian-cd/data/$CODENAME/exclude-udebs-i386
+  simple-cdd/debian-cd/data/$CODENAME/exclude-udebs-i386
 [ $? -eq 0 ] || failure
 
 # Configure the kali profile with the packages we want
 grep -v '^#' kali-config/installer-$KALI_VARIANT/packages \
-	> simple-cdd/profiles/kali.downloads
+  > simple-cdd/profiles/kali.downloads
 [ $? -eq 0 ] || failure
 
 # Tasksel is required in the mirror for debian-cd
@@ -282,27 +282,27 @@ echo tasksel >> simple-cdd/profiles/kali.downloads
 # Grub is the only supported bootloader on arm64
 # so ensure it's on the iso for arm64.
 if [ "$KALI_ARCH" = "arm64" ]; then
-	debug "arm64 GRUB"
-	echo "grub-efi-arm64" >> simple-cdd/profiles/kali.downloads
-	[ $? -eq 0 ] || failure
+  debug "arm64 GRUB"
+  echo "grub-efi-arm64" >> simple-cdd/profiles/kali.downloads
+  [ $? -eq 0 ] || failure
 fi
 
 # Run simple-cdd
 debug "Stage 2/2 - Build"
 cd simple-cdd/
 run_and_log build-simple-cdd \
-	--verbose \
-	--debug \
-	--force-root \
-	--conf simple-cdd.conf \
-	--dist $CODENAME \
-	--debian-mirror $kali_mirror \
-	--profiles "$profiles" \
-	--auto-profiles "$auto_profiles"
+  --verbose \
+  --debug \
+  --force-root \
+  --conf simple-cdd.conf \
+  --dist $CODENAME \
+  --debian-mirror $kali_mirror \
+  --profiles "$profiles" \
+  --auto-profiles "$auto_profiles"
 res=$?
 cd ../
 if [ $res -ne 0 ] || [ ! -e $IMAGE_NAME ]; then
-	failure
+  failure
 fi
 
 # If a command fails, make the whole script exit
