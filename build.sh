@@ -129,11 +129,9 @@ eval set -- "$temp"
 while true; do
 	case "$1" in
 		-d|--distribution) KALI_DIST="$2"; shift 2; ;;
-		-p|--proposed-updates) OPT_pu="1"; shift 1; ;;
 		-a|--arch) KALI_ARCH="$2"; shift 2; ;;
 		-v|--verbose) VERBOSE="1"; shift 1; ;;
 		-D|--debug) DEBUG="1"; shift 1; ;;
-		-s|--salt) shift; ;;
 		-h|--help) print_help; ;;
 		--variant) KALI_VARIANT="$2"; shift 2; ;;
 		--version) KALI_VERSION="$2"; shift 2; ;;
@@ -163,14 +161,7 @@ debug "KALI_VERSION: $KALI_VERSION"
 # Check parameters
 debug "HOST_ARCH: $HOST_ARCH"
 
-# Build parameters for lb config
-KALI_CONFIG_OPTS="--distribution $KALI_DIST -- --variant $KALI_VARIANT"
 CODENAME=$KALI_DIST # for simple-cdd/debian-cd
-if [ -n "$OPT_pu" ]; then
-	KALI_CONFIG_OPTS="$KALI_CONFIG_OPTS --proposed-updates"
-	KALI_DIST="$KALI_DIST+pu"
-fi
-debug "KALI_CONFIG_OPTS: $KALI_CONFIG_OPTS"
 debug "CODENAME: $CODENAME"
 debug "KALI_DIST: $KALI_DIST"
 

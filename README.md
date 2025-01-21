@@ -22,11 +22,9 @@ $ ./build.sh --help
 Usage: ./build.sh [<option>...]
 
   --distribution <arg>
-  --proposed-updates
   --arch <arg>
   --verbose
   --debug
-  --salt
   --variant <arg>
   --version <arg>
   --subdir <arg>
