@@ -217,7 +217,8 @@ fi
 
 cd $(dirname $0)
 # Create image output location
-mkdir -p $TARGET_DIR/$TARGET_SUBDIR
+mkdir -pv $TARGET_DIR/$TARGET_SUBDIR
+[ $? -eq 0 ] || failure
 
 # Don't quit on any errors now
 set +e
@@ -269,6 +270,7 @@ cp -aT /usr/share/debian-cd simple-cdd/debian-cd
 # Use the same grub theme as in the live images
 # Until debian-cd is smart enough: http://bugs.debian.org/1003927
 cp -f kali-config/common/bootloaders/grub-pc/grub-theme.in simple-cdd/debian-cd/data/$CODENAME/grub-theme.in
+[ $? -eq 0 ] || failure
 
 # Keep 686-pae udebs as we changed the default from 686
 # to 686-pae in the debian-installer images
@@ -305,11 +307,10 @@ run_and_log build-simple-cdd \
   --debian-mirror $kali_mirror \
   --profiles "$profiles" \
   --auto-profiles "$auto_profiles"
-res=$?
-cd ../
-if [ $res -ne 0 ] || [ ! -e $IMAGE_NAME ]; then
+if [ $? -ne 0 ] || [ ! -e $IMAGE_NAME ]; then
   failure
 fi
+cd ../
 
 # If a command fails, make the whole script exit
 set -e
