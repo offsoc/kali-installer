@@ -125,12 +125,6 @@ cd $(dirname $0)/
 # Allowed command line options
 source .getopt.sh
 
-# Define log file
-BUILD_LOG="$(pwd)/build.log"
-debug "BUILD_LOG: $BUILD_LOG"
-# Create empty file
-: > "$BUILD_LOG"
-
 # Parsing command line options (see .getopt.sh)
 temp=$(getopt -o "$BUILD_OPTS_SHORT" -l "$BUILD_OPTS_LONG,get-image-path" -- "$@")
 eval set -- "$temp"
@@ -151,6 +145,12 @@ while true; do
     *) echo "ERROR: Invalid command-line option: $1" >&2; exit 1; ;;
   esac
 done
+
+# Define log file
+BUILD_LOG="$(pwd)/build.log"
+debug "BUILD_LOG: $BUILD_LOG"
+# Create empty file
+: > "$BUILD_LOG"
 
 # Set default values
 KALI_ARCH=${KALI_ARCH:-$HOST_ARCH}
@@ -321,4 +321,4 @@ debug "Moving files"
 run_and_log mv -f $IMAGE_NAME $TARGET_DIR/$(target_image_name $KALI_ARCH)
 run_and_log mv -f "$BUILD_LOG" $TARGET_DIR/$(target_build_log $KALI_ARCH)
 
-run_and_log echo -e "\n***\nGENERATED KALI IMAGE: $(readlink -f $TARGET_DIR/$(target_image_name $KALI_ARCH))\n***"
+echo -e "\n***\nGENERATED KALI IMAGE: $(readlink -f $TARGET_DIR/$(target_image_name $KALI_ARCH))\n***"
