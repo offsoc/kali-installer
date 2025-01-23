@@ -16,6 +16,8 @@ VERBOSE=""
 DEBUG=""
 HOST_ARCH=$(dpkg --print-architecture)
 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 image_name() {
   if [ "$KALI_VARIANT" = "netinst" ]; then
     echo "simple-cdd/images/kali-$KALI_VERSION-$KALI_ARCH-NETINST-1.iso"
@@ -115,9 +117,12 @@ require_package() {
   debug "$pkg version: $pkg_version"
 }
 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 # Allowed command line options
 . $(dirname $0)/.getopt.sh
 
+# Define log file
 BUILD_LOG="$(pwd)/build.log"
 debug "BUILD_LOG: $BUILD_LOG"
 # Create empty file
@@ -161,7 +166,7 @@ debug "KALI_VERSION: $KALI_VERSION"
 # Check parameters
 debug "HOST_ARCH: $HOST_ARCH"
 
-CODENAME=$KALI_DIST # for simple-cdd/debian-cd
+CODENAME=$KALI_DIST # For simple-cdd/debian-cd
 debug "CODENAME: $CODENAME"
 debug "KALI_DIST: $KALI_DIST"
 
@@ -211,6 +216,7 @@ if [ "$ACTION" = "clean" ]; then
 fi
 
 cd $(dirname $0)
+# Create image output location
 mkdir -p $TARGET_DIR/$TARGET_SUBDIR
 
 # Don't quit on any errors now
