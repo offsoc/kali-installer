@@ -1,21 +1,28 @@
-# Installer for Kali Purple
+## Installer image for Kali Purple
+##
+## $ ./build.sh --variant purple
 
-# Metapackages
-# You can customize the set of Kali metapackages (groups of tools) available
-# in the installer ISO.
-# For the complete list see: https://tools.kali.org/kali-metapackages
+## Installer images always want these
 kali-linux-firmware
-kali-system-gui
+
+## Graphical desktop
+##   For the complete list see: https://www.kali.org/docs/general-use/metapackages/
+kali-desktop-xfce
+kali-desktop-gnome
+kali-desktop-kde
 kali-themes-purple  # temporary, until we do it a better way
 
-# Tools
+## Metapackages
+##   You can customize the set of Kali metapackages (groups of tools) available in the installer ISO
+##   For the complete list see: https://www.kali.org/tools/kali-meta/
+kali-system-gui
 kali-tools-detect
 kali-tools-identify
 kali-tools-protect
 kali-tools-recover
 kali-tools-respond
 
-# Graphical desktops
-kali-desktop-xfce
-kali-desktop-gnome
-kali-desktop-kde
+## Extra Kali packages/tools/applications
+##   For the complete list see: https://www.kali.org/tools/
+##                              https://pkg.kali.org/
+#<package>
