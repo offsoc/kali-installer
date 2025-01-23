@@ -1,9 +1,22 @@
-# Network installer image
-# Mostly empty list because netinst has no embedded packages in theory
-#
-# This variant is not meant to be used with live-build but only with
-# simple-cdd and thus ./build.sh --installer --variant netinst
+## Network Installer image ("netinst")
+##   Mostly empty list because netinst has no embedded packages in theory
+##
+## $ ./build.sh --variant netinst
 
-# We still put kali-linux-firmware because we want firmware to be
-# in the ISO for use by the installer
+## Installer images always want these
 kali-linux-firmware
+
+## Graphical desktop
+##   For the complete list see: https://www.kali.org/docs/general-use/metapackages/
+#N/A
+
+## Metapackages
+##   You can customize the set of Kali metapackages (groups of tools) available in the installer ISO
+##   For the complete list see: https://www.kali.org/tools/kali-meta/
+#N/A
+
+## Extra Kali packages/tools/applications
+##   For the complete list see: https://www.kali.org/tools/
+##                              https://pkg.kali.org/
+#<package>
+
