@@ -119,8 +119,11 @@ require_package() {
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+# Change directory into where the script is
+cd $(dirname $0)/
+
 # Allowed command line options
-. $(dirname $0)/.getopt.sh
+source .getopt.sh
 
 # Define log file
 BUILD_LOG="$(pwd)/build.log"
@@ -215,7 +218,6 @@ if [ "$ACTION" = "clean" ]; then
   exit 0
 fi
 
-cd $(dirname $0)
 # Create image output location
 mkdir -pv $TARGET_DIR/$TARGET_SUBDIR
 [ $? -eq 0 ] || failure
