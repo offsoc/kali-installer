@@ -105,7 +105,7 @@ require_package() {
   local required_version=$2
   local pkg_version=
 
-  pkg_version=$(dpkg-query -f '${Version}' -W $pkg || true)
+  pkg_version=$(dpkg-query -f '${Version}' -W $pkg 2>/dev/null || true)
   if [ -z "$pkg_version" ]; then
     echo "ERROR: You need $pkg, but it is not installed" >&2
     exit 1
