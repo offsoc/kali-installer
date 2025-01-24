@@ -309,10 +309,11 @@ run_and_log build-simple-cdd \
   --debian-mirror $kali_mirror \
   --profiles "$profiles" \
   --auto-profiles "$auto_profiles"
-if [ $? -ne 0 ] || [ ! -e $IMAGE_NAME ]; then
+res=$?
+cd ../
+if [ $res -ne 0 ] || [ ! -e $IMAGE_NAME ]; then
   failure
 fi
-cd ../
 
 # If a command fails, make the whole script exit
 set -e
