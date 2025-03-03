@@ -1,8 +1,11 @@
 #!/bin/sh
-#
+
 # The reference version of this script is maintained in:
-#   ./kali-installer/simple-cdd/profiles/kali.postinst
-#   ./kali-live/kali-config/common/includes.installer/kali-finish-install
+#   kali-installer/simple-cdd/profiles/kali.postinst
+#   kali-live/kali-config/common/includes.installer/kali-finish-install
+#   kali-live/kali-config/common/includes.chroot/usr/lib/live/config/0031-kali-user-setup
+#   kali-vm/scripts/finish-install.sh
+# (sometimes with small variations)
 #
 # It is used in multiple places to finish configuring the target system
 # and build.sh copies it where required (in the simple-cdd configuration
