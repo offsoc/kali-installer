@@ -4,7 +4,7 @@ simple-cdd/tmp/*
 ## Overwritten due to build.sh
 simple-cdd/debian-cd/*
 simple-cdd/profiles/kali.downloads
-## Incase symlink, no slash
+## In case symlink, no slash
 images
 
 ## Files
