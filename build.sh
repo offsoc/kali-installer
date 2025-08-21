@@ -237,6 +237,7 @@ debug "DEBVERSION: $DEBVERSION"
 
 if [ "$KALI_VARIANT" = "netinst" ]; then
   export DISKTYPE="NETINST"
+  export FORCE_CD_SIZE1="STICK1GB"
   profiles="kali"
   auto_profiles="kali"
 elif [ "$KALI_VARIANT" = "purple" ]; then
